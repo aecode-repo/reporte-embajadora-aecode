@@ -401,7 +401,7 @@
   // Set today's date
   document.getElementById('report-date').valueAsDate = new Date();
 
-  const SCRIPT_URL = 'https://script.google.com/a/macros/aecode.ai/s/AKfycbyJN5MxuLPkEcoCQ9x_J7E1zIx8qyOAxltfu52UnfcEhHhjpba24dmYSIU-a_bJTUOC/exec';
+  const WEBHOOK_URL = 'https://aecode.app.n8n.cloud/webhook/reporte-embajadora';
 
   function submitForm() {
     const req = ['ambassador', 'class-num', 'class-date', 'topic', 'instructor'];
@@ -451,13 +451,30 @@
     s.textContent = '⏳ Enviando reporte...';
     s.style.display = 'block';
 
-    // Enviar al Google Sheet
-    fetch(SCRIPT_URL, {
+    // Enviar a n8n webhook
+    fetch(WEBHOOK_URL, {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify({
+        nombre_embajador: data.ambassador,
+        fecha_reporte:    data.reportDate,
+        numero_clase:     data.classNum,
+        fecha_clase:      data.classDate,
+        hora_inicio:      data.classTime,
+        tema_principal:   data.topic,
+        instructor:       data.instructor,
+        estado_participacion: data.participation,
+        temas_abordados:  data.agenda,
+        incidencias:      data.incidents,
+        preguntas_frecuentes: data.faq,
+        feedback_positivo: data.liked,
+        feedback_negativo: data.disliked,
+        valoracion:       data.rating,
+        estado_animo:     data.mood,
+        observaciones:    data.extra
+      })
     })
+    .then(res => res.json())
     .then(() => {
       s.textContent = '✓ Reporte enviado correctamente al equipo AECODE.';
     })
