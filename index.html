@@ -195,6 +195,37 @@
     .mb { min-width: 80px; }
     .brand-title { font-size: 26px; }
   }
+
+  /* CHECKLIST */
+  .cl-group { margin-bottom: 1.2rem; }
+  .cl-phase {
+    font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; color: #fff;
+    background: linear-gradient(135deg, #6d28d9, #7c3aed);
+    padding: 6px 14px; border-radius: 20px; display: inline-flex;
+    align-items: center; gap: 7px; margin-bottom: 10px;
+  }
+  .cl-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 14px; border-radius: 10px; margin-bottom: 6px;
+    border: 1.5px solid #ede9fe; background: #fff;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .cl-item:hover { border-color: #c4b5fd; background: #faf7ff; }
+  .cl-item.checked { border-color: #7c3aed; background: linear-gradient(135deg, #f5f3ff, #ede9fe); }
+  .cl-item input[type=checkbox] { display: none; }
+  .cl-box {
+    width: 18px; height: 18px; border-radius: 5px; border: 2px solid #c4b5fd;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    margin-top: 1px; transition: all 0.15s; background: #fff;
+  }
+  .cl-item.checked .cl-box { background: #7c3aed; border-color: #5b21b6; }
+  .cl-check { color: #fff; font-size: 11px; font-weight: 700; display: none; }
+  .cl-item.checked .cl-check { display: block; }
+  .cl-num { font-size: 10px; font-weight: 700; color: #a78bfa; flex-shrink: 0; margin-top: 2px; width: 16px; }
+  .cl-text { font-size: 12.5px; color: #3b0fa0; line-height: 1.5; }
+  .cl-item.checked .cl-text { color: #7c3aed; text-decoration: line-through; opacity: 0.7; }
+  .cl-counter { font-size: 11px; color: #a78bfa; margin-top: 6px; text-align: right; font-style: italic; }
 </style>
 </head>
 <body>
@@ -256,9 +287,15 @@
       </div>
       <div class="g2">
         <div class="field">
+          <label>Nombre del curso o diplomado</label>
+          <input type="text" id="curso" placeholder="Ej: Diplomado en Automatización con IA"/>
+        </div>
+        <div class="field">
           <label>Tema principal</label>
           <input type="text" id="topic" placeholder="Ej: Introducción a n8n workflows"/>
         </div>
+      </div>
+      <div class="g2">
         <div class="field">
           <label>Instructor/a</label>
           <input type="text" id="instructor" placeholder="Nombre del instructor/a"/>
@@ -360,6 +397,86 @@
       </div>
     </div>
 
+
+    <!-- CHECKLIST ACTIVIDADES -->
+    <div class="sg">
+      <div class="slabel"><span class="dot"></span>Checklist de actividades</div>
+
+      <div class="cl-group">
+        <div class="cl-phase">🟣 Antes de la sesión</div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl1">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">1</span>
+          <span class="cl-text">Solicitar al Instructor la Agenda de la sesión por el Grupo con Instructor, validar si se mantiene y enviar captura o redactarla correctamente.</span>
+        </div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl2">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">2</span>
+          <span class="cl-text">Editar el Skool previa coordinación con el instructor (habilitar foros, publicaciones u otros espacios de interacción). <em style="color:#a78bfa">(En caso aplique)</em></span>
+        </div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl3">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">3</span>
+          <span class="cl-text">Solicitar al Instructor su PPT / material a descargar antes de la sesión y preparar Kahoot previa coordinación o dinámica de la sesión.</span>
+        </div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl4">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">4</span>
+          <span class="cl-text">Actualizar el PPT Canva de espera (modificaciones, agenda, fecha, etc).</span>
+        </div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl5">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">5</span>
+          <span class="cl-text">Enviar mensaje al Grupo con Inscritos con la agenda de la sesión y link de Zoom antes de las 4 pm.</span>
+        </div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl6">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">6</span>
+          <span class="cl-text">Enviar comunicado de softwares necesarios para la clase o nuevo módulo.</span>
+        </div>
+      </div>
+
+      <div class="cl-group">
+        <div class="cl-phase">🟣 Durante la sesión</div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl7">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">7</span>
+          <span class="cl-text">Compartir el link de Zoom y dar soporte en caso de acceso o problemas técnicos.</span>
+        </div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl8">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">8</span>
+          <span class="cl-text">Ejecutar el speech de embajador de acuerdo a la agenda de clase.</span>
+        </div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl9">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">9</span>
+          <span class="cl-text">Apoyar en la dinámica de la sesión (Kahoot, interacción en chat, participación de alumnos).</span>
+        </div>
+      </div>
+
+      <div class="cl-group">
+        <div class="cl-phase">🟣 Post sesión</div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl10">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">10</span>
+          <span class="cl-text">Solicitar o confirmar los recursos finales de la sesión con el instructor.</span>
+        </div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl11">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">11</span>
+          <span class="cl-text">Subir los materiales al Drive Classroom de forma ordenada.</span>
+        </div>
+        <div class="cl-item" onclick="toggleCl(this)" data-id="cl12">
+          <div class="cl-box"><span class="cl-check">✓</span></div>
+          <span class="cl-num">12</span>
+          <span class="cl-text">Verificar que los alumnos tengan acceso a los recursos y resolver dudas básicas.</span>
+        </div>
+      </div>
+
+      <div class="cl-counter" id="cl-counter">0 / 12 actividades completadas</div>
+    </div>
+
     <!-- SUBMIT -->
     <div class="submit-row">
       <span class="snote">Reporte de embajador/a · AECODE 2025</span>
@@ -404,7 +521,7 @@
   const WEBHOOK_URL = 'https://aecode.app.n8n.cloud/webhook/reporte-embajadora';
 
   function submitForm() {
-    const req = ['ambassador', 'class-num', 'class-date', 'topic', 'instructor'];
+    const req = ['ambassador', 'class-num', 'class-date', 'curso', 'topic', 'instructor'];
     let ok = true;
     req.forEach(id => {
       const el = document.getElementById(id);
@@ -434,6 +551,7 @@
       classDate:     document.getElementById('class-date').value,
       classTime:     document.getElementById('class-time').value,
       topic:         document.getElementById('topic').value,
+      curso:         document.getElementById('curso').value,
       instructor:    document.getElementById('instructor').value,
       participation: participation ? participation.textContent : '',
       agenda:        document.getElementById('agenda').value,
@@ -451,27 +569,39 @@
     s.textContent = '⏳ Enviando reporte...';
     s.style.display = 'block';
 
+    // Recoger checklist
+    const checklist = {};
+    document.querySelectorAll('.cl-item').forEach(item => {
+      checklist[item.dataset.id] = item.classList.contains('checked');
+    });
+    const completadas = Object.values(checklist).filter(Boolean).length;
+    const actividadesStr = Object.entries(checklist)
+      .filter(([,v]) => v).map(([k]) => k.replace('cl','')).join(', ');
+
     // Enviar a n8n webhook
     fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        nombre_embajador: data.ambassador,
-        fecha_reporte:    data.reportDate,
-        numero_clase:     data.classNum,
-        fecha_clase:      data.classDate,
-        hora_inicio:      data.classTime,
-        tema_principal:   data.topic,
-        instructor:       data.instructor,
+        nombre_embajador:     data.ambassador,
+        curso:                data.curso,
+        fecha_reporte:        data.reportDate,
+        numero_clase:         data.classNum,
+        fecha_clase:          data.classDate,
+        hora_inicio:          data.classTime,
+        tema_principal:       data.topic,
+        instructor:           data.instructor,
         estado_participacion: data.participation,
-        temas_abordados:  data.agenda,
-        incidencias:      data.incidents,
+        temas_abordados:      data.agenda,
+        incidencias:          data.incidents,
         preguntas_frecuentes: data.faq,
-        feedback_positivo: data.liked,
-        feedback_negativo: data.disliked,
-        valoracion:       data.rating,
-        estado_animo:     data.mood,
-        observaciones:    data.extra
+        feedback_positivo:    data.liked,
+        feedback_negativo:    data.disliked,
+        valoracion:           data.rating,
+        estado_animo:         data.mood,
+        observaciones:        data.extra,
+        actividades_completadas: completadas + '/12',
+        actividades_marcadas: actividadesStr || 'ninguna'
       })
     })
     .then(res => res.json())
@@ -481,6 +611,13 @@
     .catch(() => {
       s.textContent = '⚠️ Error al enviar. Verifica tu conexión e intenta nuevamente.';
     });
+  }
+
+  function toggleCl(el) {
+    el.classList.toggle('checked');
+    const total = document.querySelectorAll('.cl-item').length;
+    const done = document.querySelectorAll('.cl-item.checked').length;
+    document.getElementById('cl-counter').textContent = done + ' / ' + total + ' actividades completadas';
   }
 </script>
 
