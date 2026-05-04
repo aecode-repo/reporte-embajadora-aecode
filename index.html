@@ -401,6 +401,8 @@
   // Set today's date
   document.getElementById('report-date').valueAsDate = new Date();
 
+  const SCRIPT_URL = 'https://script.google.com/a/macros/aecode.ai/s/AKfycbyJN5MxuLPkEcoCQ9x_J7E1zIx8qyOAxltfu52UnfcEhHhjpba24dmYSIU-a_bJTUOC/exec';
+
   function submitForm() {
     const req = ['ambassador', 'class-num', 'class-date', 'topic', 'instructor'];
     let ok = true;
@@ -419,9 +421,49 @@
       alert('Por favor completa los campos obligatorios resaltados en rojo.');
       return;
     }
+
+    // Recoger datos
+    const participation = document.querySelector('#att .sp.active');
+    const rating = document.querySelector('.rb.active');
+    const mood = document.querySelector('#mg .mb.active');
+
+    const data = {
+      ambassador:    document.getElementById('ambassador').value,
+      reportDate:    document.getElementById('report-date').value,
+      classNum:      document.getElementById('class-num').value,
+      classDate:     document.getElementById('class-date').value,
+      classTime:     document.getElementById('class-time').value,
+      topic:         document.getElementById('topic').value,
+      instructor:    document.getElementById('instructor').value,
+      participation: participation ? participation.textContent : '',
+      agenda:        document.getElementById('agenda').value,
+      incidents:     document.getElementById('incidents').value,
+      faq:           document.getElementById('faq').value,
+      liked:         document.getElementById('liked').value,
+      disliked:      document.getElementById('disliked').value,
+      rating:        rating ? rating.textContent : '',
+      mood:          mood ? mood.querySelector('span:last-child').textContent : '',
+      extra:         document.getElementById('extra').value
+    };
+
+    // Mostrar mensaje de envío
     const s = document.getElementById('succ');
+    s.textContent = '⏳ Enviando reporte...';
     s.style.display = 'block';
-    setTimeout(() => window.print(), 400);
+
+    // Enviar al Google Sheet
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      s.textContent = '✓ Reporte enviado correctamente al equipo AECODE.';
+    })
+    .catch(() => {
+      s.textContent = '⚠️ Error al enviar. Verifica tu conexión e intenta nuevamente.';
+    });
   }
 </script>
 
