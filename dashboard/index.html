@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AECODE · Dashboard Embajadores</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pd:#2d0a6e;--pm:#6d28d9;--ps:#a78bfa;--pp:#ede9fe;--pb:#f5f2ff;
+  --ac:#c4b5fd;--gr:#10b981;--am:#f59e0b;--re:#ef4444;
+  --td:#1a0a2e;--tm:#4c1d95;--su:#ffffff;--bo:#e8e0ff;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--pb);color:var(--td);min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--pd);display:flex;flex-direction:column;z-index:100}
+.sidebar-brand{padding:28px 24px 24px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.brand-logo{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#fff;letter-spacing:4px}
+.brand-logo span{color:var(--ac)}
+.brand-sub{font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:2.5px;text-transform:uppercase;margin-top:4px}
+.sidebar-label{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:20px 24px 8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 24px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);cursor:pointer;transition:all 0.15s;border-left:3px solid transparent;text-decoration:none}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.05)}
+.nav-item.active{color:#fff;background:rgba(124,58,237,0.3);border-left-color:var(--ac)}
+.sidebar-footer{margin-top:auto;padding:20px 24px;border-top:1px solid rgba(255,255,255,0.08);font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:1px}
+.main{margin-left:220px;padding:32px 32px 48px;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.page-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--td);letter-spacing:1px}
+.page-sub{font-size:12px;color:var(--ps);margin-top:3px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.filter-pill{display:flex;align-items:center;gap:8px;background:var(--su);border:1px solid var(--bo);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--tm);font-weight:500}
+.live-badge{display:flex;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:20px;padding:6px 12px;font-size:11px;color:var(--gr);font-weight:600}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--gr);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay{position:fixed;inset:0;background:rgba(245,242,255,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px}
+.loading-spinner{width:48px;height:48px;border:3px solid var(--pp);border-top-color:var(--pm);border-radius:50%;animation:spin .8s linear infinite}
+.loading-text{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--pm);letter-spacing:2px}
+.error-banner{display:none;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--re)}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:var(--su);border-radius:14px;padding:20px 22px;border:1px solid var(--bo);position:relative;overflow:hidden;transition:box-shadow .2s}
+.kpi-card:hover{box-shadow:0 6px 28px rgba(109,40,217,.1)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--pm),var(--ac))}
+.kpi-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--ps);margin-bottom:10px}
+.kpi-value{font-family:'Orbitron',sans-serif;font-size:30px;font-weight:700;color:var(--td);line-height:1}
+.kpi-value span{font-size:14px;color:var(--ps);font-weight:400}
+.kpi-change{font-size:11px;font-weight:500;margin-top:8px}
+.kpi-change.up{color:var(--gr)}.kpi-change.down{color:var(--re)}.kpi-change.neutral{color:var(--ps)}
+.kpi-icon{position:absolute;right:18px;top:18px;font-size:24px;opacity:.12}
+.charts-row{display:grid;gap:16px;margin-bottom:16px}
+.row-2{grid-template-columns:1fr 1fr}.row-3{grid-template-columns:2fr 1fr}.row-full{grid-template-columns:1fr}
+.card{background:var(--su);border-radius:14px;border:1px solid var(--bo);overflow:hidden}
+.card-header{padding:18px 22px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bo)}
+.card-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;color:var(--td);text-transform:uppercase}
+.card-sub{font-size:11px;color:var(--ps);margin-top:2px}
+.card-body{padding:20px 22px}.card-body.no-pad{padding:0}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--ps);padding:10px 16px;text-align:left;border-bottom:1px solid var(--bo);background:var(--pb)}
+.data-table td{padding:12px 16px;font-size:13px;color:var(--td);border-bottom:1px solid #f3f0fa}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--pb)}
+.rank-num{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:var(--ps)}
+.rank-num.gold{color:#f59e0b}.rank-num.silver{color:#94a3b8}.rank-num.bronze{color:#b45309}
+.progress-bar-wrap{background:var(--pp);border-radius:4px;height:6px;width:100%;overflow:hidden}
+.progress-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--pm),var(--ac))}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.5px}
+.badge-green{background:rgba(16,185,129,.1);color:var(--gr)}.badge-amber{background:rgba(245,158,11,.1);color:var(--am)}
+.badge-red{background:rgba(239,68,68,.1);color:var(--re)}.badge-purple{background:var(--pp);color:var(--pm)}
+.mood-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.mood-count{font-size:11px;color:var(--ps);width:30px;text-align:right;flex-shrink:0}
+.cl-summary-item{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #f3f0fa}
+.cl-summary-item:last-child{border-bottom:none}
+.cl-num-badge{width:24px;height:24px;border-radius:50%;background:var(--pp);color:var(--pm);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cl-desc{font-size:12px;color:var(--td);flex:1;line-height:1.4}
+.cl-pct{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;flex-shrink:0}
+.empty-state{text-align:center;padding:40px;color:var(--ps);font-size:13px}
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.row-2,.row-3{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:20px}.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Cargando datos...</div>
+</div>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">AEC<span>O</span>DE</div>
+    <div class="brand-sub">Ingeniería y Construcción Moderna</div>
+  </div>
+  <div class="sidebar-label">Panel</div>
+  <a class="nav-item active" href="#">⬡ &nbsp;Dashboard</a>
+  <a class="nav-item" href="#">◈ &nbsp;Reportes</a>
+  <a class="nav-item" href="#">◉ &nbsp;Embajadores</a>
+  <a class="nav-item" href="#">▦ &nbsp;Cursos</a>
+  <div class="sidebar-footer">AECODE · 2025</div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title">Dashboard Embajadores</div>
+      <div class="page-sub" id="subtitle">Cargando datos...</div>
+    </div>
+    <div class="topbar-right">
+      <div class="filter-pill" id="pill-total">— reportes</div>
+      <div class="live-badge"><span class="live-dot"></span> En vivo</div>
+    </div>
+  </div>
+
+  <div class="error-banner" id="error-banner"></div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-icon">📋</div><div class="kpi-label">Reportes recibidos</div><div class="kpi-value" id="kpi-reportes">—</div><div class="kpi-change neutral" id="kpi-reportes-sub">calculando...</div></div>
+    <div class="kpi-card"><div class="kpi-icon">⭐</div><div class="kpi-label">Valoración promedio</div><div class="kpi-value" id="kpi-val">— <span>/ 10</span></div><div class="kpi-change neutral" id="kpi-val-sub">calculando...</div></div>
+    <div class="kpi-card"><div class="kpi-icon">✅</div><div class="kpi-label">Checklist promedio</div><div class="kpi-value" id="kpi-check">— <span>/ 12</span></div><div class="kpi-change neutral" id="kpi-check-sub">calculando...</div></div>
+    <div class="kpi-card"><div class="kpi-icon">🚨</div><div class="kpi-label">Incidencias reportadas</div><div class="kpi-value" id="kpi-incidents">—</div><div class="kpi-change neutral" id="kpi-incidents-sub">calculando...</div></div>
+  </div>
+
+  <div class="charts-row row-3">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Valoración por sesión</div><div class="card-sub">Promedio de calificación (1–10)</div></div></div>
+      <div class="card-body"><div style="height:210px"><canvas id="chartValoracion"></canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Participación</div><div class="card-sub">Distribución general</div></div></div>
+      <div class="card-body"><div style="height:200px"><canvas id="chartParticipacion"></canvas></div></div>
+    </div>
+  </div>
+
+  <div class="charts-row row-3">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Ranking embajadores</div><div class="card-sub">Por promedio de checklist completado</div></div></div>
+      <div class="card-body no-pad">
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Embajador/a</th><th>Reportes</th><th>Checklist</th><th>Val. prom.</th><th>Estado</th></tr></thead>
+          <tbody id="tabla-embajadores"><tr><td colspan="6" class="empty-state">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Estado de ánimo</div><div class="card-sub">Frecuencia total reportada</div></div></div>
+      <div class="card-body" id="mood-bars"><p class="empty-state">Cargando...</p></div>
+    </div>
+  </div>
+
+  <div class="charts-row row-2">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Cumplimiento por actividad</div><div class="card-sub">% de embajadores que marcaron cada ítem</div></div></div>
+      <div class="card-body" id="checklist-summary" style="max-height:340px;overflow-y:auto"><p class="empty-state">Cargando...</p></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Valoración por curso</div><div class="card-sub">Comparativa entre diplomados</div></div></div>
+      <div class="card-body"><div style="height:280px"><canvas id="chartCursos"></canvas></div></div>
+    </div>
+  </div>
+
+  <div class="charts-row row-full">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Reportes por embajador</div><div class="card-sub">Total de reportes enviados</div></div></div>
+      <div class="card-body"><div style="height:160px"><canvas id="chartCobertura"></canvas></div></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT2kcE2qjSJVlRBTLRwPK2vn_OWjQHPb1W9GzOd-24O7c5eC3EFAh24tZGbWj6h23wWemc2bpP9FMvM/pub?gid=0&single=true&output=csv';
+
+// Índices de columnas
+const C = {
+  fecha_envio:0,fecha_lima:1,nombre_embajador:2,fecha_reporte:3,
+  numero_clase:4,fecha_clase:5,hora_inicio:6,tema_principal:7,
+  instructor:8,curso:9,estado_participacion:10,temas_abordados:11,
+  incidencias:12,preguntas_frecuentes:13,feedback_positivo:14,
+  feedback_negativo:15,valoracion:16,estado_animo:17,observaciones:18,
+  actividades_completadas:19,actividades_marcadas:20
+};
+
+const PU='#7c3aed',PL='#a78bfa',GR='#10b981',AM='#f59e0b',RE='#ef4444';
+Chart.defaults.font={family:"'DM Sans',sans-serif"};
+Chart.defaults.color='#6d28d9';
+const charts={};
+
+function parseCSV(text){
+  const lines=text.trim().split('\n');
+  return lines.slice(1).map(line=>{
+    const cols=[];let cur='';let inQ=false;
+    for(const c of line){
+      if(c==='"'){inQ=!inQ;}
+      else if(c===','&&!inQ){cols.push(cur.trim().replace(/^"|"$/g,''));cur='';}
+      else{cur+=c;}
+    }
+    cols.push(cur.trim().replace(/^"|"$/g,''));
+    return cols;
+  }).filter(r=>r.length>2&&r[C.nombre_embajador]&&r[C.nombre_embajador]!=='nombre_embajador');
+}
+
+function badgeCls(p){return p>=90?'badge-green':p>=75?'badge-amber':p>=60?'badge-purple':'badge-red';}
+function badgeLbl(p){return p>=90?'Excelente':p>=75?'Muy bueno':p>=60?'Bueno':'Regular';}
+
+function renderDashboard(rows){
+  const total=rows.length;
+  const now=new Date();
+  document.getElementById('subtitle').textContent=`Datos en tiempo real · ${now.toLocaleDateString('es-PE',{month:'long',year:'numeric'})}`;
+  document.getElementById('pill-total').textContent=`${total} reportes`;
+
+  // KPI 1
+  document.getElementById('kpi-reportes').innerHTML=`${total}`;
+  document.getElementById('kpi-reportes-sub').textContent=`reportes recibidos en total`;
+
+  // KPI 2 - valoración
+  const vals=rows.map(r=>Number(r[C.valoracion])).filter(n=>!isNaN(n)&&n>0);
+  const va=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1):'—';
+  document.getElementById('kpi-val').innerHTML=`${va} <span>/ 10</span>`;
+  const vc=document.getElementById('kpi-val-sub');
+  vc.className='kpi-change '+(va>=8?'up':va>=6?'neutral':'down');
+  vc.textContent=va>=8?'↑ Valoración alta':va>=6?'→ Valoración media':'↓ Valoración baja';
+
+  // KPI 3 - checklist
+  const checks=rows.map(r=>{const m=(r[C.actividades_completadas]||'').match(/(\d+)/);return m?parseInt(m[1]):null;}).filter(n=>n!==null);
+  const ca=checks.length?(checks.reduce((a,b)=>a+b,0)/checks.length).toFixed(1):'—';
+  const cp=ca!=='—'?Math.round(ca/12*100):0;
+  document.getElementById('kpi-check').innerHTML=`${ca} <span>/ 12</span>`;
+  document.getElementById('kpi-check-sub').textContent=`→ ${cp}% completado en promedio`;
+
+  // KPI 4 - incidencias
+  const inc=rows.filter(r=>{const v=(r[C.incidencias]||'').toLowerCase().trim();return v&&v!=='sin incidencias'&&v!=='ninguna'&&v.length>5;}).length;
+  document.getElementById('kpi-incidents').textContent=inc;
+  const ic=document.getElementById('kpi-incidents-sub');
+  ic.className='kpi-change '+(inc===0?'up':inc<=3?'neutral':'down');
+  ic.textContent=inc===0?'↑ Sin incidencias':`⚠ ${inc} incidencias reportadas`;
+
+  // CHART 1 - valoración por sesión
+  const sm={};
+  rows.forEach(r=>{const s=r[C.numero_clase]||'S?';const v=Number(r[C.valoracion]);if(!isNaN(v)&&v>0){if(!sm[s])sm[s]=[];sm[s].push(v);}});
+  const sl=Object.keys(sm).sort((a,b)=>parseInt(a.replace(/\D/g,''))-parseInt(b.replace(/\D/g,'')));
+  const sd=sl.map(s=>(sm[s].reduce((a,b)=>a+b,0)/sm[s].length).toFixed(1));
+  if(charts.v)charts.v.destroy();
+  charts.v=new Chart(document.getElementById('chartValoracion'),{
+    type:'line',
+    data:{labels:sl.length?sl:['—'],datasets:[{label:'Valoración',data:sd.length?sd:[0],borderColor:PU,backgroundColor:'rgba(124,58,237,0.08)',borderWidth:2.5,pointBackgroundColor:PU,pointRadius:4,pointHoverRadius:6,fill:true,tension:0.4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:10,grid:{color:'#f0ebff'},ticks:{font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:11}}}}}
+  });
+
+  // CHART 2 - participación dona
+  const po=['Excelente','Buena','Regular','Baja','Incidente crítico'];
+  const pd=po.map(p=>rows.filter(r=>r[C.estado_participacion]===p).length);
+  if(charts.p)charts.p.destroy();
+  charts.p=new Chart(document.getElementById('chartParticipacion'),{
+    type:'doughnut',
+    data:{labels:po,datasets:[{data:pd,backgroundColor:['#6d28d9','#a78bfa','#c4b5fd','#ddd6fe','#ef4444'],borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{padding:12,font:{size:11},boxWidth:10}}}}
+  });
+
+  // TABLA ranking
+  const em={};
+  rows.forEach(r=>{
+    const n=r[C.nombre_embajador]||'Desconocido';
+    if(!em[n])em[n]={rep:0,vals:[],chk:[]};
+    em[n].rep++;
+    const v=Number(r[C.valoracion]);if(!isNaN(v)&&v>0)em[n].vals.push(v);
+    const cm=(r[C.actividades_completadas]||'').match(/(\d+)/);if(cm)em[n].chk.push(parseInt(cm[1]));
+  });
+  const el=Object.entries(em).map(([nombre,d])=>({
+    nombre,rep:d.rep,
+    va:d.vals.length?d.vals.reduce((a,b)=>a+b,0)/d.vals.length:0,
+    ca:d.chk.length?d.chk.reduce((a,b)=>a+b,0)/d.chk.length:0
+  })).sort((a,b)=>b.ca-a.ca);
+  const rk=['gold','silver','bronze'];
+  document.getElementById('tabla-embajadores').innerHTML=el.length?el.map((e,i)=>{
+    const p=Math.round(e.ca/12*100);
+    return`<tr>
+      <td><span class="rank-num ${rk[i]||''}">${i+1}</span></td>
+      <td style="font-weight:500">${e.nombre}</td>
+      <td style="color:var(--ps);font-size:12px">${e.rep}</td>
+      <td style="min-width:120px"><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar-wrap" style="flex:1"><div class="progress-bar" style="width:${p}%"></div></div><span style="font-size:11px;color:var(--ps);width:32px">${p}%</span></div></td>
+      <td style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:var(--pm)">${e.va.toFixed(1)}</td>
+      <td><span class="badge ${badgeCls(p)}">${badgeLbl(p)}</span></td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="6" class="empty-state">Sin datos aún</td></tr>';
+
+  // MOOD bars
+  const mo=[{e:'😊',l:'Entusiasmado'},{e:'🔥',l:'Muy activo'},{e:'😐',l:'Neutral'},{e:'😕',l:'Confundido'},{e:'😴',l:'Desenganchado'}];
+  const mc=mo.map(m=>rows.filter(r=>r[C.estado_animo]===m.l).length);
+  const mx=Math.max(...mc,1);
+  document.getElementById('mood-bars').innerHTML=mo.map((m,i)=>`
+    <div class="mood-row">
+      <span style="font-size:13px;width:140px;flex-shrink:0">${m.e} ${m.l}</span>
+      <div class="progress-bar-wrap" style="flex:1"><div class="progress-bar" style="width:${Math.round(mc[i]/mx*100)}%"></div></div>
+      <span class="mood-count">${mc[i]}</span>
+    </div>`).join('');
+
+  // CHECKLIST por actividad
+  const ad=['Solicitar agenda al instructor','Editar Skool (en caso aplique)','Solicitar PPT / preparar Kahoot','Actualizar PPT Canva de espera','Enviar agenda al grupo (antes 4 pm)','Comunicado de softwares necesarios','Compartir link Zoom y soporte técnico','Ejecutar speech de embajador','Apoyar en dinámica de sesión','Confirmar recursos finales','Subir materiales al Drive','Verificar acceso de alumnos'];
+  const ac=Array(12).fill(0);
+  rows.forEach(r=>{(r[C.actividades_marcadas]||'').split(',').forEach(s=>{const n=parseInt(s.trim());if(!isNaN(n)&&n>=1&&n<=12)ac[n-1]++;});});
+  document.getElementById('checklist-summary').innerHTML=total>0?ad.map((d,i)=>{
+    const p=Math.round(ac[i]/total*100);const col=p>=90?GR:p>=75?AM:RE;
+    return`<div class="cl-summary-item">
+      <div class="cl-num-badge">${i+1}</div>
+      <div class="cl-desc">${d}</div>
+      <div class="progress-bar-wrap" style="width:80px;flex-shrink:0"><div class="progress-bar" style="width:${p}%;background:${col}"></div></div>
+      <div class="cl-pct" style="color:${col}">${p}%</div>
+    </div>`;
+  }).join(''):'<p class="empty-state">Sin datos aún</p>';
+
+  // CHART 3 - por curso
+  const cu={};
+  rows.forEach(r=>{const c=r[C.curso]||'Sin curso';const v=Number(r[C.valoracion]);if(!isNaN(v)&&v>0){if(!cu[c])cu[c]=[];cu[c].push(v);}});
+  const cl=Object.keys(cu);
+  const cd=cl.map(c=>(cu[c].reduce((a,b)=>a+b,0)/cu[c].length).toFixed(1));
+  if(charts.cu)charts.cu.destroy();
+  charts.cu=new Chart(document.getElementById('chartCursos'),{
+    type:'bar',
+    data:{labels:cl.length?cl:['Sin datos'],datasets:[{label:'Valoración',data:cd.length?cd:[0],backgroundColor:[PU,PL,'#c4b5fd',PU,PL,'#8b5cf6'],borderRadius:6,borderSkipped:false}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:0,max:10,grid:{color:'#f0ebff'},ticks:{font:{size:11}}},y:{grid:{display:false},ticks:{font:{size:11}}}}}
+  });
+
+  // CHART 4 - reportes por embajador
+  const en=el.map(e=>e.nombre);
+  const er=el.map(e=>e.rep);
+  if(charts.co)charts.co.destroy();
+  charts.co=new Chart(document.getElementById('chartCobertura'),{
+    type:'bar',
+    data:{labels:en.length?en:['Sin datos'],datasets:[{label:'Reportes enviados',data:er.length?er:[0],backgroundColor:PU,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#f0ebff'},ticks:{stepSize:1,font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:11}}}}}
+  });
+}
+
+async function loadData(){
+  try{
+    const res=await fetch(CSV_URL+'&t='+Date.now());
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const text=await res.text();
+    const rows=parseCSV(text);
+    document.getElementById('loading').style.display='none';
+    if(rows.length===0){
+      const eb=document.getElementById('error-banner');
+      eb.style.display='block';
+      eb.textContent='📭 El Sheet está vacío. Envía el primer reporte para ver los datos aquí.';
+      return;
+    }
+    renderDashboard(rows);
+  }catch(e){
+    document.getElementById('loading').style.display='none';
+    const eb=document.getElementById('error-banner');
+    eb.style.display='block';
+    eb.textContent='⚠️ No se pudieron cargar los datos. Verifica que el Sheet esté publicado correctamente como CSV.';
+    console.error(e);
+  }
+}
+
+loadData();
+setInterval(loadData,60000);
+</script>
+</body>
+</html>
