@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AECODE · Reporte de Clase · Embajador/a</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f3f0fa;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+    color: #1a0a2e;
+  }
+
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(109,40,217,0.12);
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #3b0fa0 0%, #6b21e8 55%, #7c3aed 100%);
+    padding: 2.5rem 2.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header-bg-dots {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  .tri { position: absolute; width: 0; height: 0; }
+  .t1 { top:16px; right:42px; border-left:10px solid transparent; border-right:10px solid transparent; border-bottom:18px solid rgba(255,255,255,0.13); }
+  .t2 { bottom:24px; left:52px; border-left:7px solid transparent; border-right:7px solid transparent; border-bottom:12px solid rgba(255,255,255,0.09); }
+  .t3 { top:44px; right:120px; border-left:5px solid transparent; border-right:5px solid transparent; border-bottom:9px solid rgba(255,255,255,0.07); }
+  .t4 { bottom:40px; right:200px; border-left:4px solid transparent; border-right:4px solid transparent; border-bottom:7px solid rgba(255,255,255,0.06); }
+
+  .header-inner { position: relative; }
+
+  .brand-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 34px; font-weight: 900;
+    color: #fff; letter-spacing: 5px; line-height: 1;
+  }
+  .brand-title span { color: #c4b5fd; }
+
+  .brand-sub {
+    font-size: 11px; color: rgba(255,255,255,0.58);
+    letter-spacing: 2.5px; text-transform: uppercase; margin-top: 6px;
+  }
+
+  .header-pills { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+  .hpill {
+    font-size: 10px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; padding: 5px 14px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: rgba(255,255,255,0.82); background: rgba(255,255,255,0.1);
+  }
+  .hpill.accent {
+    background: rgba(196,160,255,0.22); border-color: #a78bfa; color: #e9d5ff;
+  }
+
+  .header-url {
+    font-family: 'Orbitron', sans-serif; font-size: 9px;
+    color: rgba(255,255,255,0.3); letter-spacing: 2px; margin-top: 18px;
+  }
+
+  /* FORM BODY */
+  .form-body { padding: 2rem 2.5rem 2.5rem; background: #faf7ff; }
+
+  .slabel {
+    font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase; color: #7c3aed;
+    margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;
+  }
+  .slabel .dot { width: 6px; height: 6px; border-radius: 50%; background: #7c3aed; flex-shrink: 0; }
+  .slabel::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, #c4b5fd55, transparent); }
+
+  .sg { margin-bottom: 1.75rem; }
+
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+
+  .field label { font-size: 11px; font-weight: 500; color: #5b21b6; }
+
+  .field input, .field textarea {
+    font-family: 'Inter', sans-serif; font-size: 13px; padding: 10px 13px;
+    border: 1px solid #ddd6fe; border-radius: 8px; background: #fff;
+    color: #1a0a2e; width: 100%; resize: vertical; outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field input:focus, .field textarea:focus {
+    border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+  }
+  .field textarea { min-height: 82px; line-height: 1.6; }
+  .field textarea.sm { min-height: 62px; }
+  .field textarea.lg { min-height: 105px; }
+
+  .cc { font-size: 10px; color: #a78bfa; text-align: right; margin-top: 3px; }
+
+  /* PILLS */
+  .pr { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .sp {
+    padding: 8px 16px; border: 1.5px solid #ddd6fe; border-radius: 20px;
+    font-size: 12px; font-weight: 500; color: #6d28d9; background: #fff;
+    cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif;
+  }
+  .sp:hover { border-color: #7c3aed; background: #f5f3ff; }
+  .sp.active { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+
+  /* RATING */
+  .rr { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .rb {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1.5px solid #ddd6fe; background: #fff;
+    font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 600;
+    color: #7c3aed; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .rb:hover { border-color: #7c3aed; background: #f5f3ff; }
+  .rb.active { background: #7c3aed; border-color: #5b21b6; color: #fff; }
+  .rl { display: flex; justify-content: space-between; font-size: 10px; color: #a78bfa; margin-top: 6px; }
+
+  /* MOOD */
+  .mr { display: flex; gap: 10px; }
+  .mb {
+    flex: 1; padding: 12px 6px 10px; border: 1.5px solid #ddd6fe;
+    border-radius: 10px; background: #fff; cursor: pointer;
+    text-align: center; transition: all 0.15s; font-size: 11px;
+    color: #6d28d9; display: flex; flex-direction: column;
+    align-items: center; gap: 6px; font-family: 'Inter', sans-serif;
+  }
+  .mb:hover { border-color: #7c3aed; background: #f5f3ff; }
+  .mb.active { border-color: #7c3aed; background: linear-gradient(135deg, #f5f3ff, #ede9fe); color: #5b21b6; }
+  .mi { font-size: 20px; }
+
+  /* SUBMIT */
+  .submit-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #ede9fe;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .snote { font-size: 11px; color: #a78bfa; font-style: italic; }
+  .sbtn {
+    font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; padding: 13px 32px;
+    background: linear-gradient(135deg, #6d28d9, #7c3aed);
+    color: #fff; border: none; border-radius: 8px; cursor: pointer;
+    transition: all 0.15s; text-transform: uppercase;
+  }
+  .sbtn:hover { background: linear-gradient(135deg, #5b21b6, #6d28d9); box-shadow: 0 4px 18px rgba(109,40,217,0.35); }
+
+  /* SUCCESS */
+  .smsg {
+    display: none;
+    background: linear-gradient(135deg,#f5f3ff,#ede9fe);
+    border: 1px solid #c4b5fd; border-radius: 10px;
+    padding: 1.25rem; color: #5b21b6; font-size: 15px;
+    font-weight: 600; margin-top: 1.25rem; text-align: center;
+    font-family: 'Orbitron', sans-serif; letter-spacing: 0.5px;
+  }
+
+  /* PRINT STYLES */
+  @media print {
+    body { background: #fff; padding: 0; }
+    .page { box-shadow: none; border-radius: 0; }
+    .sbtn, .submit-row { display: none; }
+    .smsg { display: none !important; }
+    .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .sp.active, .rb.active, .mb.active {
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .header { padding: 2rem 1.5rem 1.5rem; }
+    .form-body { padding: 1.5rem 1.5rem 2rem; }
+    .g2, .g3 { grid-template-columns: 1fr; }
+    .mr { flex-wrap: wrap; }
+    .mb { min-width: 80px; }
+    .brand-title { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-bg-dots"></div>
+    <div class="tri t1"></div>
+    <div class="tri t2"></div>
+    <div class="tri t3"></div>
+    <div class="tri t4"></div>
+    <div class="header-inner">
+      <div class="brand-title">AEC<span>O</span>DE</div>
+      <div class="brand-sub">Ingeniería y Construcción Moderna</div>
+      <div class="header-pills">
+        <div class="hpill accent">Embajador/a</div>
+        <div class="hpill">Reporte de clase</div>
+      </div>
+      <div class="header-url">www.aecode.ai</div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-body">
+
+    <!-- 1. Embajador -->
+    <div class="sg">
+      <div class="slabel"><span class="dot"></span>Información del embajador/a</div>
+      <div class="g2">
+        <div class="field">
+          <label>Nombre completo</label>
+          <input type="text" id="ambassador" placeholder="Tu nombre completo"/>
+        </div>
+        <div class="field">
+          <label>Fecha del reporte</label>
+          <input type="date" id="report-date"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Datos de clase -->
+    <div class="sg">
+      <div class="slabel"><span class="dot"></span>Datos de la clase</div>
+      <div class="g3">
+        <div class="field">
+          <label>Número de clase</label>
+          <input type="text" id="class-num" placeholder="Ej: Clase 04"/>
+        </div>
+        <div class="field">
+          <label>Fecha de la clase</label>
+          <input type="date" id="class-date"/>
+        </div>
+        <div class="field">
+          <label>Hora de inicio</label>
+          <input type="time" id="class-time"/>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="field">
+          <label>Tema principal</label>
+          <input type="text" id="topic" placeholder="Ej: Introducción a n8n workflows"/>
+        </div>
+        <div class="field">
+          <label>Instructor/a</label>
+          <input type="text" id="instructor" placeholder="Nombre del instructor/a"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Participación -->
+    <div class="sg">
+      <div class="slabel"><span class="dot"></span>Estado de participación</div>
+      <div class="field">
+        <label>¿Cómo fue la participación general del grupo?</label>
+        <div class="pr" id="att">
+          <button class="sp" onclick="selP('att',this)">Excelente</button>
+          <button class="sp" onclick="selP('att',this)">Buena</button>
+          <button class="sp" onclick="selP('att',this)">Regular</button>
+          <button class="sp" onclick="selP('att',this)">Baja</button>
+          <button class="sp" onclick="selP('att',this)">Incidente crítico</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Agenda -->
+    <div class="sg">
+      <div class="slabel"><span class="dot"></span>Agenda y desarrollo</div>
+      <div class="field">
+        <label>Temas abordados en la clase</label>
+        <textarea class="lg" id="agenda" placeholder="Describe los puntos de la agenda que se cubrieron..." oninput="cc(this,'ag-c',400)"></textarea>
+        <div class="cc" id="ag-c">0 / 400</div>
+      </div>
+    </div>
+
+    <!-- 5. Incidencias -->
+    <div class="sg">
+      <div class="slabel"><span class="dot"></span>Incidencias</div>
+      <div class="field">
+        <label>¿Ocurrió algún imprevisto durante la clase?</label>
+        <textarea class="sm" id="incidents" placeholder="Problemas técnicos, ausencias, retrasos... Si no hubo, escribe 'Sin incidencias'." oninput="cc(this,'inc-c',300)"></textarea>
+        <div class="cc" id="inc-c">0 / 300</div>
+      </div>
+    </div>
+
+    <!-- 6. Preguntas frecuentes -->
+    <div class="sg">
+      <div class="slabel"><span class="dot"></span>Preguntas frecuentes de los participantes</div>
+      <div class="field">
+        <label>¿Qué preguntas se repitieron o generaron más interés?</label>
+        <textarea id="faq" placeholder="Ej: Varios preguntaron cómo conectar Webhook con Google Sheets..." oninput="cc(this,'faq-c',400)"></textarea>
+        <div class="cc" id="faq-c">0 / 400</div>
+      </div>
+    </div>
+
+    <!-- 7. Feedback -->
+    <div class="sg">
+      <div class="slabel"><span class="dot"></span>Feedback de participantes</div>
+      <div class="g2">
+        <div class="field">
+          <label>¿Qué fue lo que más les gustó?</label>
+          <textarea id="liked" placeholder="Lo que más resonó o generó comentarios positivos..." oninput="cc(this,'lk-c',300)"></textarea>
+          <div class="cc" id="lk-c">0 / 300</div>
+        </div>
+        <div class="field">
+          <label>¿Qué fue lo que menos les gustó?</label>
+          <textarea id="disliked" placeholder="Lo que confundió, frustró o necesita mejorar..." oninput="cc(this,'dk-c',300)"></textarea>
+          <div class="cc" id="dk-c">0 / 300</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Valoración -->
+    <div class="sg">
+      <div class="slabel"><span class="dot"></span>Valoración general</div>
+      <div class="field">
+        <label>¿Cómo calificarías la clase? (1 = muy mala · 10 = excelente)</label>
+        <div class="rr" id="rg"></div>
+        <div class="rl"><span>Muy mala</span><span>Excelente</span></div>
+      </div>
+    </div>
+
+    <!-- 9. Estado de ánimo -->
+    <div class="sg">
+      <div class="slabel"><span class="dot"></span>Estado de ánimo del grupo</div>
+      <div class="mr" id="mg">
+        <button class="mb" onclick="selM(this)"><span class="mi">😊</span><span>Entusiasmado</span></button>
+        <button class="mb" onclick="selM(this)"><span class="mi">😐</span><span>Neutral</span></button>
+        <button class="mb" onclick="selM(this)"><span class="mi">😴</span><span>Desenganchado</span></button>
+        <button class="mb" onclick="selM(this)"><span class="mi">😕</span><span>Confundido</span></button>
+        <button class="mb" onclick="selM(this)"><span class="mi">🔥</span><span>Muy activo</span></button>
+      </div>
+    </div>
+
+    <!-- 10. Observaciones -->
+    <div class="sg">
+      <div class="slabel"><span class="dot"></span>Observaciones adicionales</div>
+      <div class="field">
+        <label>¿Algo más que el equipo de AECODE deba saber?</label>
+        <textarea class="sm" id="extra" placeholder="Sugerencias, logros destacados, pendientes de seguimiento..." oninput="cc(this,'ex-c',300)"></textarea>
+        <div class="cc" id="ex-c">0 / 300</div>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-row">
+      <span class="snote">Reporte de embajador/a · AECODE 2025</span>
+      <button class="sbtn" onclick="submitForm()">Guardar reporte ↓</button>
+    </div>
+    <div class="smsg" id="succ">✓ Para guardar: presiona Ctrl+P (o Cmd+P en Mac) y elige "Guardar como PDF".</div>
+
+  </div>
+</div>
+
+<script>
+  // Rating buttons
+  const rg = document.getElementById('rg');
+  for (let i = 1; i <= 10; i++) {
+    const b = document.createElement('button');
+    b.className = 'rb';
+    b.textContent = i;
+    b.onclick = function() {
+      document.querySelectorAll('.rb').forEach(x => x.classList.remove('active'));
+      this.classList.add('active');
+    };
+    rg.appendChild(b);
+  }
+
+  function selP(gid, el) {
+    document.querySelectorAll('#' + gid + ' .sp').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function selM(el) {
+    document.querySelectorAll('#mg .mb').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function cc(el, cid, max) {
+    document.getElementById(cid).textContent = el.value.length + ' / ' + max;
+  }
+
+  // Set today's date
+  document.getElementById('report-date').valueAsDate = new Date();
+
+  function submitForm() {
+    const req = ['ambassador', 'class-num', 'class-date', 'topic', 'instructor'];
+    let ok = true;
+    req.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el.value.trim()) {
+        el.style.borderColor = '#e24b4a';
+        el.style.boxShadow = '0 0 0 3px rgba(226,75,74,0.1)';
+        ok = false;
+      } else {
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+      }
+    });
+    if (!ok) {
+      alert('Por favor completa los campos obligatorios resaltados en rojo.');
+      return;
+    }
+    const s = document.getElementById('succ');
+    s.style.display = 'block';
+    setTimeout(() => window.print(), 400);
+  }
+</script>
+
+</body>
+</html>
